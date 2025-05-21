@@ -19,6 +19,9 @@ import { MessageBoard } from "./components/MessageBoard";
 import Preparation from './components/Preparation';
 import { Transaction } from "@mysten/sui/transactions";
 import suietLogo from "./assets/suiet-logo.svg";
+``
+
+
 
 const sampleNft = new Map([
   [

@@ -1,5 +1,4 @@
-import "./App.css";
-import "@suiet/wallet-kit/style.css";
+import './index.css';
 
 import {
   ConnectButton,
@@ -15,6 +14,7 @@ import { useMemo, useState } from "react";
 import { BottomNav } from "./components/BottomNav";
 import { Buffer } from "buffer";
 import { Ed25519PublicKey } from "@mysten/sui/keypairs/ed25519";
+import { MessageBoard } from "./components/MessageBoard";
 import { Transaction } from "@mysten/sui/transactions";
 import suietLogo from "./assets/suiet-logo.svg";
 
@@ -183,87 +183,15 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://github.com/suiet/wallet-kit" target="_blank">
-          <img src={suietLogo} className="logo" alt="Suiet logo" />
-        </a>
-      </div>
-      <h1>Vite + Suiet Kit</h1>
-      <div className="card">
-        <ConnectButton
-          onConnectError={(error) => {
-            if (error.code === ErrorCode.WALLET__CONNECT_ERROR__USER_REJECTED) {
-              console.warn(
-                "user rejected the connection to " + error.details?.wallet
-              );
-            } else {
-              console.warn("unknown connect error: ", error);
-            }
-          }}
-        />
-
-        {!wallet.connected ? (
-          <p>Connect DApp with Suiet wallet from now!</p>
-        ) : (
-          <div>
-            <div>
-              <p>current wallet: {wallet.adapter?.name}</p>
-              <p>
-                wallet status:{" "}
-                {wallet.connecting
-                  ? "connecting"
-                  : wallet.connected
-                  ? "connected"
-                  : "disconnected"}
-              </p>
-              <p>wallet address: {wallet.account?.address}</p>
-              <p>current network: {wallet.chain?.name}</p>
-              <p>
-                wallet balance:{" "}
-                {formatSUI(balance ?? 0, {
-                  withAbbr: false,
-                })}{" "}
-                SUI
-              </p>
-              <p>
-                wallet publicKey: {uint8arrayToHex(wallet.account?.publicKey as any)}
-              </p>
-            </div>
-            <div className={"btn-group"} style={{ margin: "8px 0" }}>
-              {nftContractAddr && (
-                <button
-                  onClick={() =>
-                    handleSignAndExecuteTransaction(nftContractAddr, {
-                      isCustomExecution: true,
-                    })
-                  }
-                >
-                  Mint {chainName(wallet.chain?.id)} NFT
-                </button>
-              )}
-              <button onClick={handleSignMsg}>
-                Sign & Verify PersonalMessage
-              </button>
-              {nftContractAddr && (
-                <button
-                  onClick={() =>
-                    handleSignTxnAndVerifySignature(nftContractAddr)
-                  }
-                >
-                  Sign & Verify Transaction
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and Suiet logos to learn more
-      </p>
+    <div className="min-h-screen bg-gray-50">
+      {currentPage === "home" ? (
+        <MessageBoard />
+      ) : (
+        <div className="p-8">
+          <h1 className="text-2xl font-bold">Preparation Page</h1>
+          <p className="mt-4">Coming soon...</p>
+        </div>
+      )}
       <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} />
     </div>
   );

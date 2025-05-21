@@ -15,6 +15,7 @@ import { BottomNav } from "./components/BottomNav";
 import { Buffer } from "buffer";
 import { Ed25519PublicKey } from "@mysten/sui/keypairs/ed25519";
 import { MessageBoard } from "./components/MessageBoard";
+import Preparation from './components/Preparation';
 import { Transaction } from "@mysten/sui/transactions";
 import suietLogo from "./assets/suiet-logo.svg";
 
@@ -189,7 +190,7 @@ function App() {
       ) : (
         <div className="p-8">
           <h1 className="text-2xl font-bold">Preparation Page</h1>
-          <p className="mt-4">Coming soon...</p>
+          <Preparation />
         </div>
       )}
       <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} />

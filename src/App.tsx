@@ -1,4 +1,5 @@
 import './index.css';
+import "@suiet/wallet-kit/style.css";
 
 import {
   ConnectButton,
@@ -185,6 +186,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ConnectButton />
       {currentPage === "home" ? (
         <MessageBoard />
       ) : (

@@ -1,19 +1,22 @@
-import suietLogo from "./assets/suiet-logo.svg";
 import "./App.css";
+import "@suiet/wallet-kit/style.css";
+
 import {
   ConnectButton,
-  useAccountBalance,
-  useWallet,
-  SuiChainId,
   ErrorCode,
+  SuiChainId,
   formatSUI,
+  useAccountBalance,
   useSuiClient,
+  useWallet,
 } from "@suiet/wallet-kit";
-import "@suiet/wallet-kit/style.css";
-import { Transaction } from "@mysten/sui/transactions";
-import { useMemo } from "react";
-import { Ed25519PublicKey } from "@mysten/sui/keypairs/ed25519";
+import { useMemo, useState } from "react";
+
+import { BottomNav } from "./components/BottomNav";
 import { Buffer } from "buffer";
+import { Ed25519PublicKey } from "@mysten/sui/keypairs/ed25519";
+import { Transaction } from "@mysten/sui/transactions";
+import suietLogo from "./assets/suiet-logo.svg";
 
 const sampleNft = new Map([
   [
@@ -46,6 +49,7 @@ function createMintNftTxb(contractAddress: string) {
 }
 
 function App() {
+  const [currentPage, setCurrentPage] = useState<"home" | "preparation">("home");
   const wallet = useWallet();
   const client = useSuiClient();
 
@@ -260,6 +264,7 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and Suiet logos to learn more
       </p>
+      <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} />
     </div>
   );
 }

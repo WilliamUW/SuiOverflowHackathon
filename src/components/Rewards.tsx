@@ -96,9 +96,6 @@ const rewards: Reward[] = [
   },
 ];
 
-const packageId = "0x0e84cadb0461d99b4fdfc7e1c70f51d9cd69b39e2f8ca92ca40dbc018604cfe4";
-const rewardBalanceId = "0x2284833c38e25d112b87141876a5636df17c28174c9321475edb2e2041e70ffb";
-
 export function Rewards() {
   const wallet = useWallet();
   const client = useSuiClient();

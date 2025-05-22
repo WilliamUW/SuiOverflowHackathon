@@ -1,9 +1,13 @@
+import { InterviewQuestion, getInterviewQuestions } from "../view-functions/getInterviewQuestions";
 import { useEffect, useMemo, useState } from "react";
+import { useSuiClient, useWallet } from "@suiet/wallet-kit";
 
 import { Button } from "./ui/button";
+import { Card } from "./ui/card";
 import { ChevronDown } from "lucide-react";
 import { Textarea } from "./ui/textarea";
 import { cn } from "../lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
 // Mock company descriptions
 const companyDescriptions: Record<string, string> = {
@@ -12,63 +16,35 @@ const companyDescriptions: Record<string, string> = {
   sui: "Sui is a Layer 1 blockchain designed for instant settlement and high throughput.",
 };
 
-// Mock interview questions
-const mockInterviewQuestions = [
-  {
-    user_address: "0x123...abc",
-    company_name: "Sui",
-    interview_question: "How does Sui achieve high throughput?",
-    timestamp: `${Math.floor(Date.now() / 1000) - 86400}`,
-  },
-  {
-    user_address: "0x456...def",
-    company_name: "Sui",
-    interview_question: "Explain the Move programming language.",
-    timestamp: `${Math.floor(Date.now() / 1000) - 432000}`,
-  },
-  {
-    user_address: "0x789...ghi",
-    company_name: "Google",
-    interview_question: "What is your approach to solving complex problems?",
-    timestamp: `${Math.floor(Date.now() / 1000) - 259200}`,
-  },
-];
-
-interface InterviewData {
-  user_address: string;
-  company_name: string;
-  interview_question: string;
-  timestamp: string;
-}
-
 export default function Preparation() {
+  const wallet = useWallet();
+  const client = useSuiClient();
   const [personalInfo, setPersonalInfo] = useState("");
   const [companyInfo, setCompanyInfo] = useState("");
-  const [selectedCompany, setSelectedCompany] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [generatedAnswer, setGeneratedAnswer] = useState<{ questions: Array<{ question: string; answer: string }> } | null>(null);
   const [isOpen, setIsOpen] = useState(true);
-  const [interviewQuestions, setInterviewQuestions] = useState<InterviewData[]>([]);
 
-  // Get unique companies from questions
+  const { data: interviewQuestions = [] } = useQuery({
+    queryKey: ["interview-questions"],
+    queryFn: () => getInterviewQuestions(client),
+    refetchInterval: 10000,
+  });
+
+  // Get unique companies from interview questions
   const companies = useMemo(() => {
-    const uniqueCompanies = Array.from(new Set(mockInterviewQuestions.map(q => q.company_name)));
-    return uniqueCompanies.map(name => ({
-      value: name.toLowerCase().replace(/[^a-z0-9]/g, ""),
-      label: name,
-      logo: `https://logo.clearbit.com/${name.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`
-    }));
-  }, []);
+    const uniqueCompanies = new Set(interviewQuestions.map(q => q.company_name));
+    return Array.from(uniqueCompanies).sort();
+  }, [interviewQuestions]);
 
-  const selectedCompanyData = companies.find(c => c.label === selectedCompany);
-
-  useEffect(() => {
-    setInterviewQuestions(mockInterviewQuestions);
-  }, []);
-
-  const filteredQuestions = interviewQuestions.filter(
-    q => q.company_name.toLowerCase() === selectedCompany.toLowerCase()
-  );
+  // Get questions for selected company
+  const companyQuestions = useMemo(() => {
+    if (!selectedCompany) return [];
+    return interviewQuestions
+      .filter(q => q.company_name === selectedCompany)
+      .sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
+  }, [selectedCompany, interviewQuestions]);
 
   const handleGenerateAnswers = async () => {
     setLoading(true);
@@ -92,8 +68,59 @@ export default function Preparation() {
 
   return (
     <div className="container max-w-screen-lg mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Sui Interview Preparation</h1>
-      <div className="space-y-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold mb-2">Interview Preparation</h1>
+        <p className="text-gray-600">Practice with real interview questions from top companies</p>
+      </div>
+
+      <div className="space-y-8">
+        {/* Company Selection */}
+        <div>
+          <label className="text-sm font-medium" htmlFor="company-select">Select Company</label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {companies.map((company) => (
+              <button
+                key={company}
+                onClick={() => setSelectedCompany(company)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedCompany === company
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {company}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Questions List */}
+        {selectedCompany && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Interview Questions for {selectedCompany}</h2>
+            {companyQuestions.length > 0 ? (
+              <div className="grid gap-4">
+                {companyQuestions.map((question, index) => (
+                  <Card key={index} className="p-4">
+                    <div className="flex flex-col gap-2">
+                      <p className="text-gray-700">{question.interview_question}</p>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <span>Posted {new Date(Number(question.timestamp) * 1000).toLocaleDateString()}</span>
+                        <span>•</span>
+                        <span className="font-mono text-xs">
+                          {question.user_address.slice(0, 6)}...{question.user_address.slice(-4)}
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No questions available for {selectedCompany} yet.</p>
+            )}
+          </div>
+        )}
+
         <div className="space-y-2">
           <label htmlFor="personal-info" className="text-sm font-medium">
             Personal Information
@@ -106,69 +133,6 @@ export default function Preparation() {
             className="min-h-[200px]"
           />
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium" htmlFor="company-select">Select Company</label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {companies.map((company) => (
-              <button
-                key={company.value}
-                type="button"
-                className={cn(
-                  "flex items-center px-4 py-2 rounded-full border transition-colors",
-                  selectedCompany === company.label ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-800 hover:bg-blue-100"
-                )}
-                onClick={() => setSelectedCompany(company.label)}
-              >
-                <img
-                  src={company.logo}
-                  alt={`${company.label} logo`}
-                  className="w-7 h-7 rounded-full mr-2 object-contain bg-white"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = `https://ui-avatars.com/api/?name=${company.label}&background=random`;
-                  }}
-                />
-                {company.label}
-              </button>
-            ))}
-          </div>
-          <input
-            id="company-select"
-            type="text"
-            placeholder="Enter company name..."
-            value={selectedCompany}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedCompany(e.target.value)}
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {selectedCompany && companyDescriptions[selectedCompany.toLowerCase()] && (
-            <p className="text-sm text-gray-600 mt-2">
-              {companyDescriptions[selectedCompany.toLowerCase()]}
-            </p>
-          )}
-        </div>
-        {selectedCompanyData && filteredQuestions.length > 0 && (
-          <div className="space-y-2">
-            <button
-              className="flex items-center justify-between w-full px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              onClick={() => setIsOpen((v) => !v)}
-            >
-              <span className="font-medium">Common {selectedCompanyData.label} Interview Questions</span>
-              <ChevronDown className={cn("h-5 w-5 transition-transform", isOpen ? "transform rotate-180" : "")}/>
-            </button>
-            {isOpen && (
-              <div className="px-4 py-2 space-y-2">
-                {filteredQuestions.map((question, index) => (
-                  <div key={index} className="p-3 bg-white border rounded-lg">
-                    <p className="text-gray-700">{question.interview_question}</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Added {new Date(parseInt(question.timestamp) * 1000).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
         <div className="space-y-2">
           <label htmlFor="company-info" className="text-sm font-medium">
             Company Information

@@ -30,6 +30,9 @@ interface InterviewQuestion {
   user_address: string;
 }
 
+const packageId = "0x257056025c5e521d17353740a74d7172068f7230ed63a9cb9e90abca1780ac2b";
+const interviewHistoryId = "0xa1704e86a3266e7ad3d40a1938d94e824f9884722ce0f94607430861515ef085";
+
 export function MessageBoard() {
   const wallet = useWallet();
   const client = useSuiClient();
@@ -177,9 +180,9 @@ export function MessageBoard() {
     try {
       const tx = new Transaction();
       tx.moveCall({
-        target: `0xc13ce252c258907c98319e8176fdb013cad01c8acfae8a31abcb07aea58d91d3::hello_world::store_interview`,
+        target: packageId + `::hello_world::store_interview`,
         arguments: [
-          tx.object("0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39"),
+          tx.object(interviewHistoryId),
           tx.pure.string(companyName),
           tx.pure.string(question),
         ],
@@ -261,9 +264,9 @@ export function MessageBoard() {
       console.log("Starting debug write...");
       const tx = new Transaction();
       tx.moveCall({
-        target: `0xc13ce252c258907c98319e8176fdb013cad01c8acfae8a31abcb07aea58d91d3::hello_world::store_interview`,
+        target: packageId + `::hello_world::store_interview`,
         arguments: [
-          tx.object("0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39"),
+          tx.object(interviewHistoryId),
           tx.pure.string("Google"),
           tx.pure.string("Debug test question"),
         ],

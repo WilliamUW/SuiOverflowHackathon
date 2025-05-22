@@ -12,8 +12,9 @@ use sui::object::{Self, UID};
 use sui::transfer;
 use sui::tx_context::{Self, TxContext};
 use sui::clock;
-use sui::coin::{Self, Coin, TreasuryCap};
+use sui::coin::{Self, Coin, TreasuryCap, CoinMetadata};
 use sui::balance::{Self, Balance};
+use sui::one_time_witness::{Self, OneTimeWitness};
 
 /// Structure to store interview data
 public struct InterviewData has store, copy, drop {
@@ -32,11 +33,22 @@ public struct InterviewHistory has key {
 /// BBT token type
 public struct BBT has drop {}
 
-/// Function to initialize the module
-fun init(ctx: &mut TxContext) {
-    // Create BBT token
+/// Function to initialize the interview history
+public fun init_interview_history(ctx: &mut TxContext) {
+    let interview_history = InterviewHistory {
+        id: object::new(ctx),
+        interviews: vector::empty(),
+    };
+    transfer::share_object(interview_history);
+}
+
+/// Function to initialize the BBT token
+public fun init_bbt_token(witness: BBT, ctx: &mut TxContext) {
+    // Verify that this is a one-time witness
+    one_time_witness::assert_one_time_witness(&witness);
+
     let (treasury_cap, metadata) = coin::create_currency(
-        BBT {},
+        witness,
         9, // decimals
         b"BBT", // symbol
         b"Behavioral Buddy Token", // name
@@ -49,13 +61,6 @@ fun init(ctx: &mut TxContext) {
     transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
     // Make metadata immutable and share it
     transfer::public_transfer(metadata, tx_context::sender(ctx));
-
-    // Initialize interview history
-    let interview_history = InterviewHistory {
-        id: object::new(ctx),
-        interviews: vector::empty(),
-    };
-    transfer::share_object(interview_history);
 }
 
 /// Function to store interview data and mint BBT reward

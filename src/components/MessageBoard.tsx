@@ -12,6 +12,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Transaction } from "@mysten/sui/transactions";
 import { cn } from "../lib/utils";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const debugMode = false;
 
@@ -53,6 +54,7 @@ interface Company {
 export function MessageBoard() {
   const wallet = useWallet();
   const client = useSuiClient();
+  const queryClient = useQueryClient();
   const [companyName, setCompanyName] = useState<string>("");
   const [interviewQuestion, setInterviewQuestion] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"overview" | "questions" | "add" | "reviews" | "jobs" | "salaries" | "benefits" | "photos" | "diversity">("overview");
@@ -211,10 +213,16 @@ export function MessageBoard() {
       });
 
       console.log("Transaction successful:", result);
-      alert("Question stored successfully!");
+      toast.success("Question stored successfully!");
+      
+      // Refetch BBT balance
+      queryClient.invalidateQueries({ queryKey: ["bbt-balance", wallet.address] });
+      
+      // Refetch interview questions
+      fetchInterviewQuestions();
     } catch (error) {
       console.error("Failed to store question:", error);
-      alert("Failed to store question. See console for details.");
+      toast.error("Failed to store question. See console for details.");
     }
   }
 

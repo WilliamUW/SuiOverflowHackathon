@@ -1,5 +1,12 @@
 # 🌐 Sui Overflow | Decentralized Interview Database
 
+
+## 🔗 Links
+
+- [Demo Video]()
+- [Pitch Deck](https://www.canva.com/design/DAGoHVfmlUc/OsMRobG8RHWiBItMg6s9og/view?utm_content=DAGoHVfmlUc&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7128bbd9c0)
+
+
 ## 🎯 Track: Explorations - Global Coordination
 
 ## ❌ The Problem: Centralized Interview Data
@@ -108,9 +115,3 @@ We're building more than just a question database. Our vision is a **fully decen
 > **Thank you! 🙌😄**
 
 ---
-
-## 🔗 Links
-
-- [Demo Video]()
-- [Pitch Deck]()
-- [GitHub Repository]() 

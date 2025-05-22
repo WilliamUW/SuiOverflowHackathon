@@ -37,8 +37,6 @@ public struct RewardBalance has key {
     balances: Table<address, u64>,
 }
 
-/// BehavioralBuddyToken token type
-public struct BehavioralBuddyToken has drop {}
 
 /// Function to initialize the interview history
 public fun init_interview_history(ctx: &mut TxContext) {
@@ -58,20 +56,6 @@ public fun init_reward_balance(ctx: &mut TxContext) {
     transfer::share_object(reward_balance);
 }
 
-/// Function to initialize the BehavioralBuddyToken token
-public fun init_bbt_token(ctx: &mut TxContext) {
-    let (treasury_cap, metadata) = coin::create_currency(
-        BehavioralBuddyToken {},
-        9, // decimals
-        b"BUDDY", // symbol
-        b"Behavioral Buddy Token", // name
-        b"Token rewarded for sharing interview questions", // description
-        option::none(), // url
-        ctx
-    );
-    transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
-    transfer::public_transfer(metadata, tx_context::sender(ctx));
-}
 
 /// Function to store interview data and increment reward balance
 public fun store_interview(

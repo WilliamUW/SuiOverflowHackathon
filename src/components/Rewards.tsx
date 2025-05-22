@@ -1,12 +1,12 @@
 import { BookOpen, Building2, Crown, FileText, GraduationCap, MessageSquare, UserCheck, Users, Users2, Video } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card1";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { useSuiClient, useWallet } from "@suiet/wallet-kit";
 
 import { Button } from "./ui/button";
 import { getAccountBBTBalance } from "../view-functions/getAccountBalance";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { useWallet } from "@suiet/wallet-kit";
 
 interface Reward {
   id: string;
@@ -95,22 +95,22 @@ const rewards: Reward[] = [
   },
 ];
 
+const packageId = "0x0e84cadb0461d99b4fdfc7e1c70f51d9cd69b39e2f8ca92ca40dbc018604cfe4";
+const rewardBalanceId = "0x2284833c38e25d112b87141876a5636df17c28174c9321475edb2e2041e70ffb";
+
 export function Rewards() {
   const wallet = useWallet();
+  const client = useSuiClient();
 
-  const { data: bbtBalance } = useQuery({
+  const { data: bbtBalance, refetch } = useQuery({
     queryKey: ["bbt-balance", wallet.address],
-    refetchInterval: 10_000,
     queryFn: async () => {
       if (!wallet.address) return 0;
-      try {
-        const balance = await getAccountBBTBalance({ accountAddress: wallet.address });
-        return balance;
-      } catch (error) {
-        console.error("Error fetching BBT balance:", error);
-        return 0;
-      }
+      return getAccountBBTBalance(client, wallet.address);
     },
+    enabled: !!wallet.address,
+    refetchInterval: 10000,
+    refetchOnWindowFocus: true,
   });
 
   const handleRedeem = (reward: Reward) => {

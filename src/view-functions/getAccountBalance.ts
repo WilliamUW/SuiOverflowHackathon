@@ -1,10 +1,9 @@
-import { SuiClient } from "@mysten/sui.js/client";
+import { useSuiClient } from "@suiet/wallet-kit";
 
-const packageId = "0x0e84cadb0461d99b4fdfc7e1c70f51d9cd69b39e2f8ca92ca40dbc018604cfe4";
 const rewardBalanceId = "0x2284833c38e25d112b87141876a5636df17c28174c9321475edb2e2041e70ffb";
 
-export async function getAccountBBTBalance({ accountAddress }: { accountAddress: string }) {
-  const client = new SuiClient({ url: "https://fullnode.mainnet.sui.io" });
+export async function getAccountBBTBalance(client: ReturnType<typeof useSuiClient>, address: string): Promise<number> {
+  if (!address) return 0;
   
   try {
     const result = await client.getObject({
@@ -16,9 +15,47 @@ export async function getAccountBBTBalance({ accountAddress }: { accountAddress:
 
     if (result.data?.content?.dataType === "moveObject") {
       const content = result.data.content as any;
-      const balances = content.fields.balances as any[];
-      const userBalance = balances.find(b => b.fields.key === accountAddress);
-      return userBalance ? Number(userBalance.fields.value) : 0;
+      const balances = content.fields.balances;
+      
+      if (!balances || !balances.fields) {
+        console.log("No balances field found");
+        return 0;
+      }
+
+      // Get the table ID
+      const tableId = balances.fields.id.id;
+      
+      // Get the dynamic fields of the table
+      const dynamicFields = await client.getDynamicFields({
+        parentId: tableId,
+      });
+
+      console.log("Dynamic fields:", dynamicFields);
+
+      // Find the field for the user's address
+      const userField = dynamicFields.data.find(
+        field => field.name.value === address || field.name.value === address.toLowerCase()
+      );
+
+      if (userField) {
+        // Get the actual balance value
+        const balanceObject = await client.getObject({
+          id: userField.objectId,
+          options: {
+            showContent: true,
+          },
+        });
+
+        console.log("Balance object:", balanceObject);
+
+        if (balanceObject.data?.content?.dataType === "moveObject") {
+          const balanceContent = balanceObject.data.content as any;
+          return Number(balanceContent.fields.value);
+        }
+      }
+
+      console.log("No balance found for address:", address);
+      return 0;
     }
     return 0;
   } catch (error) {

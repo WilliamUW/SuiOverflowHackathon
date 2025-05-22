@@ -32,6 +32,21 @@ interface InterviewQuestion {
   user_address: string;
 }
 
+interface CompanyStats {
+  reviews: string;
+  jobs: string;
+  salaries: string;
+  interviews: string;
+}
+
+interface Company {
+  name: string;
+  banner: string;
+  profile: string;
+  description: string;
+  stats: CompanyStats;
+}
+
 const packageId = "0x0e84cadb0461d99b4fdfc7e1c70f51d9cd69b39e2f8ca92ca40dbc018604cfe4";
 const interviewHistoryId = "0x7161f859be09964d637724322ab9c9f48f64d35ed30a3a676bd3f44941be100e";
 const rewardBalanceId = "0x2284833c38e25d112b87141876a5636df17c28174c9321475edb2e2041e70ffb";
@@ -56,7 +71,7 @@ export function MessageBoard() {
   const [contractQuestions, setContractQuestions] = useState<InterviewQuestion[]>([]);
 
   // Placeholder data
-  const companies = [
+  const companies: Company[] = [
     {
       name: "Google",
       banner: PLACEHOLDER_BANNERS[0],
@@ -404,7 +419,7 @@ export function MessageBoard() {
                   >
                     <div className="mb-4 text-gray-600 text-lg">{selectedCompany.description}</div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                      {Object.entries(selectedCompany.stats).map(([key, value]) => (
+                      {(Object.entries(selectedCompany.stats) as [keyof CompanyStats, string][]).map(([key, value]) => (
                         <motion.div
                           key={key}
                           whileHover={{ scale: 1.05 }}

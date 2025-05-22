@@ -12,6 +12,8 @@ import { Transaction } from "@mysten/sui/transactions";
 import { cn } from "../lib/utils";
 import { toast } from "sonner";
 
+const debugMode = false;
+
 const PLACEHOLDER_BANNERS = [
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
   "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80",
@@ -285,7 +287,7 @@ export function MessageBoard() {
       className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-8 mb-20"
     >
       {/* Debug Buttons */}
-      <div className="p-4 bg-gradient-to-r from-gray-50 to-white border-b flex gap-4">
+      {debugMode && <div className="p-4 bg-gradient-to-r from-gray-50 to-white border-b flex gap-4">
         <Button
           onClick={readInterviewQuestions}
           variant="outline"
@@ -300,7 +302,7 @@ export function MessageBoard() {
         >
           Debug: Write Question
         </Button>
-      </div>
+      </div>}
 
       {/* Company Selector */}
       <div className="flex gap-6 px-8 pt-8 pb-4 overflow-x-auto border-b bg-gradient-to-r from-gray-50 to-white items-center">

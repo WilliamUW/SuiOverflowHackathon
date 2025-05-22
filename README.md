@@ -2,10 +2,6 @@
 
 ## 🎯 Track: Explorations - Global Coordination
 
-### 🎯 Track Justification
-
-We've chosen the **Explorations Track** with a focus on **Global Coordination** because our project creates a decentralized alternative to Glassdoor by enabling job seekers worldwide to contribute and access interview questions through a community-owned database. By leveraging Sui's blockchain technology, we're building a global knowledge network where contributors are fairly rewarded for sharing their interview experiences, and users can access verified company insights from around the world. This project represents a novel approach to global coordination in the $2.4B interview preparation industry, demonstrating how blockchain technology can create more equitable and transparent systems for sharing professional knowledge that's not owned and sold by private corporations.
-
 ## ❌ The Problem: Centralized Interview Data
 
 Glassdoor and similar platforms have become the de facto source for interview information, but they come with significant drawbacks:
@@ -24,6 +20,10 @@ In 2024, the interview preparation market was valued at over **$2.4 billion**, y
 > * Contributors are rewarded for their insights
 > * Data is immutable and transparent
 > * Access is fair and equitable
+
+### 🎯 Track Justification
+
+We've chosen the **Explorations Track** with a focus on **Global Coordination** because our project creates a decentralized alternative to Glassdoor by enabling job seekers worldwide to contribute and access interview questions through a community-owned database. By leveraging Sui's blockchain technology, we're building a global knowledge network where contributors are fairly rewarded for sharing their interview experiences, and users can access verified company insights from around the world. This project represents a novel approach to global coordination in the $2.4B interview preparation industry, demonstrating how blockchain technology can create more equitable and transparent systems for sharing professional knowledge that's not owned and sold by private corporations.
 
 ## 🧠 How It Works
 

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDown, ArrowUp, Briefcase, Building2, Clock, DollarSign, Heart, Image, MessageSquare, Plus, Share2, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { interviewHistoryId, packageId, rewardBalanceId } from '../config';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSuiClient, useWallet } from "@suiet/wallet-kit";
 
@@ -48,10 +49,6 @@ interface Company {
   description: string;
   stats: CompanyStats;
 }
-
-const packageId = "0x0e84cadb0461d99b4fdfc7e1c70f51d9cd69b39e2f8ca92ca40dbc018604cfe4";
-const interviewHistoryId = "0x7161f859be09964d637724322ab9c9f48f64d35ed30a3a676bd3f44941be100e";
-const rewardBalanceId = "0x2284833c38e25d112b87141876a5636df17c28174c9321475edb2e2041e70ffb";
 
 export function MessageBoard() {
   const wallet = useWallet();

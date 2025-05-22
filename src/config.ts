@@ -1,0 +1,3 @@
+export const packageId = "0xa45715a59be4839c4066d127251640259194c4ddc6ef20091b23f56891f7a5b0";
+export const interviewHistoryId = "0x2f82d1ecbb76695b7e6e79a47808510436fa799aa9a4fae571a0f9bdc97d14f9";
+export const rewardBalanceId = "0x071ada5e64f393c016bd840794e9c57b79ccf5c8bac51ef02b7e070c087a1430"; 

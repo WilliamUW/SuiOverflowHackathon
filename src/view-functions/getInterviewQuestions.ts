@@ -1,6 +1,5 @@
+import { interviewHistoryId } from '../config';
 import { useSuiClient } from "@suiet/wallet-kit";
-
-const interviewHistoryId = "0x7161f859be09964d637724322ab9c9f48f64d35ed30a3a676bd3f44941be100e";
 
 export interface InterviewQuestion {
   company_name: string;

@@ -1,6 +1,5 @@
+import { rewardBalanceId } from "../config";
 import { useSuiClient } from "@suiet/wallet-kit";
-
-const rewardBalanceId = "0x2284833c38e25d112b87141876a5636df17c28174c9321475edb2e2041e70ffb";
 
 export async function getAccountBBTBalance(client: ReturnType<typeof useSuiClient>, address: string): Promise<number> {
   if (!address) return 0;

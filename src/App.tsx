@@ -193,7 +193,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Toaster />
       <div className="min-h-screen bg-gray-50">
-        <ConnectButton />
+        <div className="flex justify-center mb-4">
+          <ConnectButton />
+        </div>
         {currentPage === "home" ? (
           <MessageBoard />
         ) : currentPage === "preparation" ? (

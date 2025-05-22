@@ -139,16 +139,21 @@ export function MessageBoard() {
     try {
       const tx = new Transaction();
       tx.moveCall({
-        target: `${import.meta.env.VITE_PACKAGE_ID}::hello_world::store_interview`,
+        target: `0xc13ce252c258907c98319e8176fdb013cad01c8acfae8a31abcb07aea58d91d3::hello_world::store_interview`,
         arguments: [
-          tx.object(import.meta.env.VITE_INTERVIEW_HISTORY_ID || ""), // The shared InterviewHistory object ID
+          tx.object("0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39"),
           tx.pure.string(companyName),
           tx.pure.string(question),
         ],
+        typeArguments: [],
       });
 
       const result = await wallet.signAndExecuteTransaction({
         transaction: tx,
+        options: {
+          showEffects: true,
+          showEvents: true,
+        },
       });
 
       console.log("Transaction successful:", result);

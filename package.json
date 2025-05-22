@@ -10,11 +10,15 @@
   },
   "dependencies": {
     "@mysten/sui": "1.28.2",
+    "@mysten/sui.js": "^0.54.1",
     "@suiet/wallet-kit": "0.4.1",
+    "@tanstack/react-query": "^5.76.2",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.12.1",
     "lucide-react": "^0.511.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sonner": "^2.0.3",
     "tailwind-merge": "^3.3.0",
     "tweetnacl": "^1.0.3"
   },

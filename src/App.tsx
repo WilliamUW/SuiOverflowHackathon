@@ -10,6 +10,7 @@ import {
   useSuiClient,
   useWallet,
 } from "@suiet/wallet-kit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
 import { BottomNav } from "./components/BottomNav";
@@ -17,11 +18,10 @@ import { Buffer } from "buffer";
 import { Ed25519PublicKey } from "@mysten/sui/keypairs/ed25519";
 import { MessageBoard } from "./components/MessageBoard";
 import Preparation from './components/Preparation';
+import { Rewards } from "./components/Rewards";
+import { Toaster } from "sonner";
 import { Transaction } from "@mysten/sui/transactions";
 import suietLogo from "./assets/suiet-logo.svg";
-``
-
-
 
 const sampleNft = new Map([
   [
@@ -53,8 +53,10 @@ function createMintNftTxb(contractAddress: string) {
   return tx;
 }
 
+const queryClient = new QueryClient();
+
 function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "preparation">("home");
+  const [currentPage, setCurrentPage] = useState<"home" | "preparation" | "rewards">("home");
   const wallet = useWallet();
   const client = useSuiClient();
 
@@ -188,18 +190,23 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <ConnectButton />
-      {currentPage === "home" ? (
-        <MessageBoard />
-      ) : (
-        <div className="p-8">
-          <h1 className="text-2xl font-bold">Preparation Page</h1>
-          <Preparation />
-        </div>
-      )}
-      <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <Toaster />
+      <div className="min-h-screen bg-gray-50">
+        <ConnectButton />
+        {currentPage === "home" ? (
+          <MessageBoard />
+        ) : currentPage === "preparation" ? (
+          <div className="p-8">
+            <h1 className="text-2xl font-bold">Preparation Page</h1>
+            <Preparation />
+          </div>
+        ) : (
+          <Rewards />
+        )}
+        <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} />
+      </div>
+    </QueryClientProvider>
   );
 }
 

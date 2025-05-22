@@ -30,8 +30,9 @@ interface InterviewQuestion {
   user_address: string;
 }
 
-const packageId = "0x257056025c5e521d17353740a74d7172068f7230ed63a9cb9e90abca1780ac2b";
-const interviewHistoryId = "0xa1704e86a3266e7ad3d40a1938d94e824f9884722ce0f94607430861515ef085";
+const packageId = "0x0e84cadb0461d99b4fdfc7e1c70f51d9cd69b39e2f8ca92ca40dbc018604cfe4";
+const interviewHistoryId = "0x7161f859be09964d637724322ab9c9f48f64d35ed30a3a676bd3f44941be100e";
+const rewardBalanceId = "0x2284833c38e25d112b87141876a5636df17c28174c9321475edb2e2041e70ffb";
 
 export function MessageBoard() {
   const wallet = useWallet();
@@ -183,6 +184,7 @@ export function MessageBoard() {
         target: packageId + `::hello_world::store_interview`,
         arguments: [
           tx.object(interviewHistoryId),
+          tx.object(rewardBalanceId),
           tx.pure.string(companyName),
           tx.pure.string(question),
         ],
@@ -204,7 +206,7 @@ export function MessageBoard() {
   async function fetchInterviewQuestions() {
     try {
       const result = await client.getObject({
-        id: "0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39",
+        id: interviewHistoryId,
         options: {
           showContent: true,
         },
@@ -255,43 +257,13 @@ export function MessageBoard() {
 
   // Function to test writing a question directly
   async function debugWriteQuestion() {
-    if (!wallet.connected) {
-      alert("Please connect your wallet first!");
-      return;
-    }
-
-    try {
-      console.log("Starting debug write...");
-      const tx = new Transaction();
-      tx.moveCall({
-        target: packageId + `::hello_world::store_interview`,
-        arguments: [
-          tx.object(interviewHistoryId),
-          tx.pure.string("Google"),
-          tx.pure.string("Debug test question"),
-        ],
-      });
-
-      console.log("Transaction constructed:", tx);
-      const result = await wallet.signAndExecuteTransaction({
-        transaction: tx,
-      });
-
-      console.log("Transaction result:", result);
-      alert("Debug write completed. Check console for details.");
-      
-      // Refresh the questions after writing
-      await fetchInterviewQuestions();
-    } catch (error) {
-      console.error("Debug write failed:", error);
-      alert("Debug write failed. See console for details.");
-    }
+    storeInterviewQuestion("Google", "Tell me about yourself.");
   }
 
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden mt-8 mb-20">
       {/* Debug Buttons */}
-      {/* <div className="p-4 bg-gray-50 border-b flex gap-4">
+       <div className="p-4 bg-gray-50 border-b flex gap-4">
         <Button
           onClick={readInterviewQuestions}
           variant="outline"
@@ -306,7 +278,7 @@ export function MessageBoard() {
         >
           Debug: Write Question
         </Button>
-      </div> */}
+      </div>
 
       {/* Company Selector */}
       <div className="flex gap-6 px-8 pt-8 pb-4 overflow-x-auto border-b bg-gray-50 items-center">

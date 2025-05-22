@@ -46,6 +46,7 @@ export function MessageBoard() {
   const [verified, setVerified] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [verifyResponse, setVerifyResponse] = useState<string | null>(null);
+  const [contractQuestions, setContractQuestions] = useState<InterviewQuestion[]>([]);
 
   // Placeholder data
   const companies = [
@@ -159,7 +160,38 @@ export function MessageBoard() {
     }
   }
 
-  // Function to read interview questions from the smart contract
+  // Function to fetch interview questions from the smart contract
+  async function fetchInterviewQuestions() {
+    try {
+      const result = await client.getObject({
+        id: "0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39",
+        options: {
+          showContent: true,
+        },
+      });
+
+      if (result.data?.content?.dataType === "moveObject") {
+        const content = result.data.content as any;
+        const interviews = content.fields.interviews as any[];
+        const questions = interviews.map(interview => ({
+          company_name: interview.fields.company_name,
+          interview_question: interview.fields.interview_question,
+          timestamp: interview.fields.timestamp,
+          user_address: interview.fields.user_address,
+        }));
+        setContractQuestions(questions);
+      }
+    } catch (error) {
+      console.error("Failed to fetch questions:", error);
+    }
+  }
+
+  // Fetch questions when component mounts
+  useEffect(() => {
+    fetchInterviewQuestions();
+  }, []);
+
+  // Function to read interview questions from the smart contract (debug)
   async function readInterviewQuestions() {
     if (!wallet.connected) {
       alert("Please connect your wallet first!");
@@ -167,7 +199,6 @@ export function MessageBoard() {
     }
 
     try {
-      // Read the InterviewHistory object directly
       const result = await client.getObject({
         id: "0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39",
         options: {
@@ -276,68 +307,70 @@ export function MessageBoard() {
                 <h2 className="text-2xl font-semibold mb-4">Interview Questions for {selectedCompany.name}</h2>
                 <ScrollArea className="h-[400px] rounded-md p-4">
                   <div className="grid gap-6">
-                    {companyQuestions.length > 0 ? (
-                      companyQuestions.map((interview, index) => {
-                        const voteKey = interview.interview_question + interview.user_address;
-                        const vote = voteState[voteKey] || 0;
-                        return (
-                          <Card key={index} className="shadow-md hover:shadow-lg transition-shadow">
-                            <div className="flex gap-4 p-4 items-start">
-                              {/* Profile pic and address */}
-                              <div className="flex flex-col items-center min-w-[60px]">
-                                <img
-                                  src={getUserProfilePic(interview.user_address)}
-                                  alt="User"
-                                  className="w-10 h-10 rounded-full border mb-2"
-                                />
-                                <span className="text-xs text-muted-foreground break-all">
-                                  {interview.user_address.slice(0, 6)}...{interview.user_address.slice(-4)}
-                                </span>
-                              </div>
-                              {/* Question and actions */}
-                              <div className="flex-1">
-                                <div className="flex justify-between items-center">
-                                  <p className="text-base font-medium mb-1">{interview.interview_question}</p>
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      className="p-1 rounded hover:bg-accent"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(window.location.href + "#" + interview.interview_question);
-                                        alert("Link copied!");
-                                      }}
-                                      title="Share"
-                                    >
-                                      <Share2 className="w-4 h-4 text-gray-500" />
-                                    </button>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-4 mt-2">
-                                  <span className="text-xs text-muted-foreground">
-                                    {new Date(Number(interview.timestamp) * 1000).toLocaleString()}
+                    {contractQuestions.length > 0 ? (
+                      contractQuestions
+                        .filter(q => q.company_name === selectedCompany.name)
+                        .map((interview, index) => {
+                          const voteKey = interview.interview_question + interview.user_address;
+                          const vote = voteState[voteKey] || 0;
+                          return (
+                            <Card key={index} className="shadow-md hover:shadow-lg transition-shadow">
+                              <div className="flex gap-4 p-4 items-start">
+                                {/* Profile pic and address */}
+                                <div className="flex flex-col items-center min-w-[60px]">
+                                  <img
+                                    src={getUserProfilePic(interview.user_address)}
+                                    alt="User"
+                                    className="w-10 h-10 rounded-full border mb-2"
+                                  />
+                                  <span className="text-xs text-muted-foreground break-all">
+                                    {interview.user_address.slice(0, 6)}...{interview.user_address.slice(-4)}
                                   </span>
-                                  <div className="flex items-center gap-1 ml-auto">
-                                    <button
-                                      className={`p-1 rounded-full hover:bg-blue-100 ${vote === 1 ? "text-blue-600" : "text-gray-400"}`}
-                                      onClick={() => setVoteState((prev) => ({ ...prev, [voteKey]: vote === 1 ? 0 : 1 }))}
-                                      title="Upvote"
-                                    >
-                                      <ArrowUp className="w-4 h-4" />
-                                    </button>
-                                    <span className="text-xs font-semibold w-4 text-center">{vote === 1 ? 1 : vote === -1 ? -1 : 0}</span>
-                                    <button
-                                      className={`p-1 rounded-full hover:bg-red-100 ${vote === -1 ? "text-red-600" : "text-gray-400"}`}
-                                      onClick={() => setVoteState((prev) => ({ ...prev, [voteKey]: vote === -1 ? 0 : -1 }))}
-                                      title="Downvote"
-                                    >
-                                      <ArrowDown className="w-4 h-4" />
-                                    </button>
+                                </div>
+                                {/* Question and actions */}
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-center">
+                                    <p className="text-base font-medium mb-1">{interview.interview_question}</p>
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        className="p-1 rounded hover:bg-accent"
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(window.location.href + "#" + interview.interview_question);
+                                          alert("Link copied!");
+                                        }}
+                                        title="Share"
+                                      >
+                                        <Share2 className="w-4 h-4 text-gray-500" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-4 mt-2">
+                                    <span className="text-xs text-muted-foreground">
+                                      {new Date(Number(interview.timestamp) * 1000).toLocaleString()}
+                                    </span>
+                                    <div className="flex items-center gap-1 ml-auto">
+                                      <button
+                                        className={`p-1 rounded-full hover:bg-blue-100 ${vote === 1 ? "text-blue-600" : "text-gray-400"}`}
+                                        onClick={() => setVoteState((prev) => ({ ...prev, [voteKey]: vote === 1 ? 0 : 1 }))}
+                                        title="Upvote"
+                                      >
+                                        <ArrowUp className="w-4 h-4" />
+                                      </button>
+                                      <span className="text-xs font-semibold w-4 text-center">{vote === 1 ? 1 : vote === -1 ? -1 : 0}</span>
+                                      <button
+                                        className={`p-1 rounded-full hover:bg-red-100 ${vote === -1 ? "text-red-600" : "text-gray-400"}`}
+                                        onClick={() => setVoteState((prev) => ({ ...prev, [voteKey]: vote === -1 ? 0 : -1 }))}
+                                        title="Downvote"
+                                      >
+                                        <ArrowDown className="w-4 h-4" />
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </Card>
-                        );
-                      })
+                            </Card>
+                          );
+                        })
                     ) : (
                       <div className="text-gray-500">No interview questions found for {selectedCompany.name}.</div>
                     )}

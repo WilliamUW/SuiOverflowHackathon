@@ -1,5 +1,5 @@
+import { AlertCircle, CheckCircle2, ChevronDown, Clock, Loader2, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Sparkles } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { InterviewQuestion, getInterviewQuestions } from "../view-functions/getInterviewQuestions";
@@ -352,160 +352,278 @@ Personal Info: ${personalInfo}\nCompany Info: ${companyInfo}\nCompany: ${selecte
   };
 
   return (
-    <div className="container max-w-screen-lg mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2">Interview Preparation</h1>
-        <p className="text-gray-600">Practice with real interview questions from top companies</p>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="container max-w-screen-lg mx-auto px-4 py-12"
+    >
+      <div className="mb-12 text-center">
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+        >
+          Interview Preparation
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-gray-600 text-lg"
+        >
+          Practice with real interview questions from top companies
+        </motion.p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-12">
         {/* Company Selection */}
-        <div>
-          <label className="text-sm font-medium" htmlFor="company-select">Select Company</label>
-          <div className="flex flex-wrap gap-2 mb-2">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
+        >
+          <label className="text-sm font-medium text-gray-700 mb-4 block">Select Company</label>
+          <div className="flex flex-wrap gap-3">
             {companies.map((company) => (
-              <button
+              <motion.button
                 key={company}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedCompany(company)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={cn(
+                  "px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                   selectedCompany === company
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                    : "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md"
+                )}
               >
                 {company}
-              </button>
+              </motion.button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Questions List */}
-        {selectedCompany && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Interview Questions for {selectedCompany}</h2>
-            {companyQuestions.length > 0 ? (
-              <div className="grid gap-4">
-                {companyQuestions.map((question, index) => (
-                  <Card key={index} className="p-4">
-                    <div className="flex flex-col gap-2">
-                      <p className="text-gray-700">{question.interview_question}</p>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <span>Posted {new Date(Number(question.timestamp) * 1000).toLocaleDateString()}</span>
-                        <span>•</span>
-                        <span className="font-mono text-xs">
-                          {question.user_address.slice(0, 6)}...{question.user_address.slice(-4)}
-                        </span>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">No questions available for {selectedCompany} yet.</p>
-            )}
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {selectedCompany && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <h2 className="text-2xl font-semibold text-gray-800">Interview Questions for {selectedCompany}</h2>
+              {companyQuestions.length > 0 ? (
+                <div className="grid gap-6">
+                  {companyQuestions.map((question, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="p-6 hover:shadow-lg transition-shadow duration-200">
+                        <div className="flex flex-col gap-3">
+                          <p className="text-gray-800 text-lg">{question.interview_question}</p>
+                          <div className="flex items-center gap-3 text-sm text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              {new Date(Number(question.timestamp) * 1000).toLocaleDateString()}
+                            </span>
+                            <span>•</span>
+                            <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                              {question.user_address.slice(0, 6)}...{question.user_address.slice(-4)}
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-gray-50 rounded-xl">
+                  <p className="text-gray-500">No questions available for {selectedCompany} yet.</p>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <div className="space-y-2">
-          <label htmlFor="personal-info" className="text-sm font-medium">
+        {/* Personal Info Input */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="space-y-4"
+        >
+          <label htmlFor="personal-info" className="text-sm font-medium text-gray-700">
             Personal Information
           </label>
           <Textarea
             id="personal-info"
             placeholder="Copy and paste in your resume, linkedin, personal bio, etc."
             value={personalInfo}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPersonalInfo(e.target.value)}
-            className="min-h-[200px]"
+            onChange={(e) => setPersonalInfo(e.target.value)}
+            className="min-h-[200px] rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
           />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="company-info" className="text-sm font-medium">
+        </motion.div>
+
+        {/* Company Info Input */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="space-y-4"
+        >
+          <label htmlFor="company-info" className="text-sm font-medium text-gray-700">
             Company Information
           </label>
           <Textarea
             id="company-info"
             placeholder="Copy and paste in company-specific information, job requirements, and interview context..."
             value={companyInfo}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCompanyInfo(e.target.value)}
-            className="min-h-[200px]"
+            onChange={(e) => setCompanyInfo(e.target.value)}
+            className="min-h-[200px] rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
           />
-        </div>
-        <Button onClick={handleGenerateAnswers} className="w-full" disabled={loading}>
-          {loading ? "Generating..." : "Generate Answers"}
-        </Button>
-        {loading && (
-          <div className="w-full flex justify-center mt-4">
-            <span className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></span>
-            <span className="ml-2 text-blue-500">Generating answer...</span>
-          </div>
-        )}
-        {generatedAnswer?.questions && !loading && (
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold">Generated Questions and Answers</h2>
-              <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                {generatedAnswer.questions.length} {generatedAnswer.questions.length === 1 ? 'Question' : 'Questions'}
-              </span>
-            </div>
-            {generatedAnswer.questions.map((qa, index) => (
-              <div key={index} className="p-4 border rounded bg-gray-50">
-                <h3 className="font-medium text-blue-600 mb-2">Q: {qa.question}</h3>
-                <p className="text-gray-700">A: {qa.answer}</p>
-                
-                <Collapsible
-                  open={feedbackOpen[index]}
-                  onOpenChange={(open) => setFeedbackOpen({ ...feedbackOpen, [index]: open })}
-                  className="mt-4"
-                >
-                  <CollapsibleTrigger className="flex items-center text-sm text-gray-500 hover:text-gray-700">
-                    <ChevronDown className={cn("h-4 w-4 mr-1 transition-transform", feedbackOpen[index] ? "transform rotate-180" : "")} />
-                    Provide Feedback
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="mt-2 space-y-2">
-                    <Textarea
-                      placeholder="Enter feedback for the AI (e.g., Focus more on xyz experience)"
-                      value={qa.feedback || ""}
-                      onChange={(e) => handleFeedbackChange(index, e.target.value)}
-                      className="min-h-[100px]"
-                    />
-                    <Button
-                      onClick={() => handleRegenerateAnswer(index)}
-                      disabled={qa.isRegenerating}
-                      className="w-full"
-                    >
-                      {qa.isRegenerating ? "Regenerating..." : "Regenerate Answer"}
-                    </Button>
-                  </CollapsibleContent>
-                </Collapsible>
-              </div>
-            ))}
-          </div>
-        )}
+        </motion.div>
 
-        <div className="mt-8 p-4 border rounded-lg bg-gray-50">
-          <h2 className="font-semibold mb-4">Ask a Custom Question</h2>
-          <div className="space-y-4">
+        {/* Generate Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+        >
+          <Button 
+            onClick={handleGenerateAnswers} 
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Generating...</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                <span>Generate Answers</span>
+              </div>
+            )}
+          </Button>
+        </motion.div>
+
+        {/* Generated Answers */}
+        <AnimatePresence mode="wait">
+          {generatedAnswer?.questions && !loading && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mt-12 space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-gray-800">Generated Questions and Answers</h2>
+                <span className="text-sm text-gray-500 bg-gray-100 px-4 py-2 rounded-full">
+                  {generatedAnswer.questions.length} {generatedAnswer.questions.length === 1 ? 'Question' : 'Questions'}
+                </span>
+              </div>
+              {generatedAnswer.questions.map((qa, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="p-6 border rounded-2xl bg-white shadow-lg hover:shadow-xl transition-shadow duration-200"
+                >
+                  <h3 className="font-medium text-blue-600 mb-3">Q: {qa.question}</h3>
+                  <p className="text-gray-700 mb-4">A: {qa.answer}</p>
+                  
+                  <Collapsible
+                    open={feedbackOpen[index]}
+                    onOpenChange={(open) => setFeedbackOpen({ ...feedbackOpen, [index]: open })}
+                    className="mt-4"
+                  >
+                    <CollapsibleTrigger className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                      <ChevronDown className={cn("h-4 w-4 mr-1 transition-transform duration-200", feedbackOpen[index] ? "transform rotate-180" : "")} />
+                      Provide Feedback
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-4 space-y-4">
+                      <Textarea
+                        placeholder="Enter feedback for the AI (e.g., Focus more on xyz experience)"
+                        value={qa.feedback || ""}
+                        onChange={(e) => handleFeedbackChange(index, e.target.value)}
+                        className="min-h-[100px] rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      />
+                      <Button
+                        onClick={() => handleRegenerateAnswer(index)}
+                        disabled={qa.isRegenerating}
+                        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                      >
+                        {qa.isRegenerating ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>Regenerating...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-5 h-5" />
+                            <span>Regenerate Answer</span>
+                          </div>
+                        )}
+                      </Button>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Custom Question Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.4 }}
+          className="mt-12 p-8 border rounded-2xl bg-gradient-to-br from-gray-50 to-white shadow-lg"
+        >
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Ask a Custom Question</h2>
+          <div className="space-y-6">
             <Textarea
               placeholder="Enter your custom interview question..."
               value={customQuestion}
               onChange={(e) => setCustomQuestion(e.target.value)}
-              className="min-h-[100px]"
+              className="min-h-[100px] rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
             />
             <Button
               onClick={handleGenerateCustomAnswer}
               disabled={isGeneratingCustom || !customQuestion.trim() || !selectedCompany}
-              className="w-full"
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              {isGeneratingCustom ? "Generating Answer..." : "Generate Answer"}
+              {isGeneratingCustom ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Generating Answer...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  <span>Generate Answer</span>
+                </div>
+              )}
             </Button>
             {!selectedCompany && (
-              <p className="text-sm text-red-500">
-                Please select a company first
-              </p>
+              <div className="flex items-center gap-2 text-sm text-red-500">
+                <AlertCircle className="w-4 h-4" />
+                <span>Please select a company first</span>
+              </div>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 } 

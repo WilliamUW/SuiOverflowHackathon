@@ -1,11 +1,13 @@
 import { ArrowDown, ArrowUp, Share2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSuiClient, useWallet } from "@suiet/wallet-kit";
 
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { Transaction } from "@mysten/sui/transactions";
 
 const PLACEHOLDER_BANNERS = [
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
@@ -28,6 +30,8 @@ interface InterviewQuestion {
 }
 
 export function MessageBoard() {
+  const wallet = useWallet();
+  const client = useSuiClient();
   const [companyName, setCompanyName] = useState<string>("");
   const [interviewQuestion, setInterviewQuestion] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"overview" | "questions" | "add" | "reviews" | "jobs" | "salaries" | "benefits" | "photos" | "diversity">("overview");
@@ -123,6 +127,36 @@ export function MessageBoard() {
         .map((c) => c.charCodeAt(0))
         .reduce((a, b) => a + b, 0) % PLACEHOLDER_USER_PROFILES.length;
     return PLACEHOLDER_USER_PROFILES[idx];
+  }
+
+  // Function to store interview question in the smart contract
+  async function storeInterviewQuestion(companyName: string, question: string) {
+    if (!wallet.connected) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    try {
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${import.meta.env.VITE_PACKAGE_ID}::hello_world::store_interview`,
+        arguments: [
+          tx.object(import.meta.env.VITE_INTERVIEW_HISTORY_ID || ""), // The shared InterviewHistory object ID
+          tx.pure.string(companyName),
+          tx.pure.string(question),
+        ],
+      });
+
+      const result = await wallet.signAndExecuteTransaction({
+        transaction: tx,
+      });
+
+      console.log("Transaction successful:", result);
+      alert("Question stored successfully!");
+    } catch (error) {
+      console.error("Failed to store question:", error);
+      alert("Failed to store question. See console for details.");
+    }
   }
 
   return (
@@ -344,11 +378,13 @@ export function MessageBoard() {
                           />
                           <Button
                             disabled={!interviewQuestion}
-                            onClick={() => {
-                              alert("Earned 1 BBT!");
-                              setInterviewQuestion("");
-                              setInterviewEmailPreview(null);
-                              setVerified(false);
+                            onClick={async () => {
+                              if (selectedCompany && interviewQuestion) {
+                                await storeInterviewQuestion(selectedCompany.name, interviewQuestion);
+                                setInterviewQuestion("");
+                                setInterviewEmailPreview(null);
+                                setVerified(false);
+                              }
                             }}
                             className="max-w-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                           >

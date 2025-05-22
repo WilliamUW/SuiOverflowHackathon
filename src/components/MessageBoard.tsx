@@ -252,7 +252,7 @@ export function MessageBoard() {
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden mt-8">
       {/* Debug Buttons */}
-      <div className="p-4 bg-gray-50 border-b flex gap-4">
+      {/* <div className="p-4 bg-gray-50 border-b flex gap-4">
         <Button
           onClick={readInterviewQuestions}
           variant="outline"
@@ -267,7 +267,7 @@ export function MessageBoard() {
         >
           Debug: Write Question
         </Button>
-      </div>
+      </div> */}
 
       {/* Company Selector */}
       <div className="flex gap-6 px-8 pt-8 pb-4 overflow-x-auto border-b bg-gray-50 items-center">

@@ -67,3 +67,14 @@ public fun create_interview_history(ctx: &mut TxContext): InterviewHistory {
         interviews: vector::empty(),
     }
 }
+
+/// Function to get the number of interviews
+public fun get_interview_count(interview_history: &InterviewHistory): u64 {
+    vector::length(&interview_history.interviews)
+}
+
+/// Function to get interview data at a specific index
+public fun get_interview(interview_history: &InterviewHistory, index: u64): InterviewData {
+    assert!(index < vector::length(&interview_history.interviews), 0);
+    *vector::borrow(&interview_history.interviews, index)
+}

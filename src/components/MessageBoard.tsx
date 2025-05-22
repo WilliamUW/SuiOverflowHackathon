@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { Transaction } from "@mysten/sui/transactions";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
 
 const PLACEHOLDER_BANNERS = [
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
@@ -213,16 +214,58 @@ export function MessageBoard() {
     }
   }
 
+  // Function to test writing a question directly
+  async function debugWriteQuestion() {
+    if (!wallet.connected) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    try {
+      console.log("Starting debug write...");
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `0xc13ce252c258907c98319e8176fdb013cad01c8acfae8a31abcb07aea58d91d3::hello_world::store_interview`,
+        arguments: [
+          tx.object("0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39"),
+          tx.pure.string("Google"),
+          tx.pure.string("Debug test question"),
+        ],
+      });
+
+      console.log("Transaction constructed:", tx);
+      const result = await wallet.signAndExecuteTransaction({
+        transaction: tx,
+      });
+
+      console.log("Transaction result:", result);
+      alert("Debug write completed. Check console for details.");
+      
+      // Refresh the questions after writing
+      await fetchInterviewQuestions();
+    } catch (error) {
+      console.error("Debug write failed:", error);
+      alert("Debug write failed. See console for details.");
+    }
+  }
+
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden mt-8">
-      {/* Debug Button */}
-      <div className="p-4 bg-gray-50 border-b">
+      {/* Debug Buttons */}
+      <div className="p-4 bg-gray-50 border-b flex gap-4">
         <Button
           onClick={readInterviewQuestions}
           variant="outline"
           className="text-sm"
         >
-          Debug: Read Interview Questions
+          Debug: Read Questions
+        </Button>
+        <Button
+          onClick={debugWriteQuestion}
+          variant="outline"
+          className="text-sm"
+        >
+          Debug: Write Question
         </Button>
       </div>
 

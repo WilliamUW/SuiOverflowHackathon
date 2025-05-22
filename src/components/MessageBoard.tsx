@@ -75,6 +75,42 @@ export function MessageBoard() {
         interviews: "25K",
       },
     },
+    {
+      name: "Meta",
+      banner: PLACEHOLDER_BANNERS[2],
+      profile: "https://logo.clearbit.com/meta.com",
+      description: "Meta Platforms, Inc. is an American multinational technology conglomerate.",
+      stats: {
+        reviews: "75K",
+        jobs: "7K",
+        salaries: "170K",
+        interviews: "22K",
+      },
+    },
+    {
+      name: "Amazon",
+      banner: PLACEHOLDER_BANNERS[0],
+      profile: "https://logo.clearbit.com/amazon.com",
+      description: "Amazon.com, Inc. is an American multinational technology company focusing on e-commerce, cloud computing, and digital streaming.",
+      stats: {
+        reviews: "90K",
+        jobs: "12K",
+        salaries: "190K",
+        interviews: "35K",
+      },
+    },
+    {
+      name: "Citadel",
+      banner: PLACEHOLDER_BANNERS[1],
+      profile: "https://logo.clearbit.com/citadel.com",
+      description: "Citadel is a global financial institution that serves the world's most sophisticated institutional and retail clients.",
+      stats: {
+        reviews: "5K",
+        jobs: "500",
+        salaries: "50K",
+        interviews: "8K",
+      },
+    },
   ];
 
   // Set default selected company

@@ -286,7 +286,7 @@ export function MessageBoard() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden mt-8">
+    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden mt-8 mb-20">
       {/* Debug Buttons */}
       {/* <div className="p-4 bg-gray-50 border-b flex gap-4">
         <Button

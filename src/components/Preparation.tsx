@@ -6,14 +6,13 @@ import { InterviewQuestion, getInterviewQuestions } from "../view-functions/getI
 import { useEffect, useMemo, useState } from "react";
 import { useSuiClient, useWallet } from "@suiet/wallet-kit";
 
+import {API_BASE_URL} from "../config";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 import { cn } from "../lib/utils";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-
-export const API_BASE_URL = 'https://easyatoronto.onrender.com';
 
 interface QAPair {
   question: string;

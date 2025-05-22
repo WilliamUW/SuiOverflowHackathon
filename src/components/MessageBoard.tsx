@@ -1,7 +1,7 @@
+import { API_BASE_URL, interviewHistoryId, packageId, rewardBalanceId } from '../config';
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDown, ArrowUp, Briefcase, Building2, Clock, DollarSign, Heart, Image, MessageSquare, Plus, Share2, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { interviewHistoryId, packageId, rewardBalanceId } from '../config';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSuiClient, useWallet } from "@suiet/wallet-kit";
 
@@ -580,13 +580,34 @@ export function MessageBoard() {
                                 <button
                                   className={`px-4 py-2 rounded bg-blue-600 text-white font-semibold ${verifying ? 'opacity-60 cursor-not-allowed' : ''}`}
                                   disabled={verifying || verified}
-                                  onClick={() => {
+                                  onClick={async (e) => {
+                                    e.preventDefault();
                                     setVerifying(true);
-                                    setTimeout(() => {
-                                      setVerified(true);
+                                    setVerifyError(null);
+                                    setVerifyResponse(null);
+                                    setVerified(false);
+                                    try {
+                                      const prompt = `Is this an interview email from ${selectedCompany.name}? Return Yes or No and provide a brief explanation.`;
+                                      const res = await fetch(`${API_BASE_URL}/api/verify-interview-email`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                          prompt,
+                                          imageBase64: interviewEmailPreview,
+                                        }),
+                                      });
+                                      const data = await res.json();
+                                      setVerifyResponse(data.response);
+                                      if (data.verified) {
+                                        setVerified(true);
+                                      } else {
+                                        setVerifyError(data.response || 'Verification failed.');
+                                      }
+                                    } catch (err) {
+                                      setVerifyError('Verification failed. Please try again.');
+                                    } finally {
                                       setVerifying(false);
-                                      setVerifyResponse("Email verified successfully!");
-                                    }, 1500);
+                                    }
                                   }}
                                 >
                                   {verifying ? 'Verifying...' : verified ? 'Verified!' : 'Verify Interview'}

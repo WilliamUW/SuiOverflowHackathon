@@ -145,15 +145,10 @@ export function MessageBoard() {
           tx.pure.string(companyName),
           tx.pure.string(question),
         ],
-        typeArguments: [],
       });
 
       const result = await wallet.signAndExecuteTransaction({
         transaction: tx,
-        options: {
-          showEffects: true,
-          showEvents: true,
-        },
       });
 
       console.log("Transaction successful:", result);
@@ -164,8 +159,42 @@ export function MessageBoard() {
     }
   }
 
+  // Function to read interview questions from the smart contract
+  async function readInterviewQuestions() {
+    if (!wallet.connected) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    try {
+      // Read the InterviewHistory object directly
+      const result = await client.getObject({
+        id: "0xafc9d98fcb15d936f42aaee8bae3dc930e1e23497843dee729295237c5ecdc39",
+        options: {
+          showContent: true,
+        },
+      });
+
+      console.log("Interview History Object:", result);
+    } catch (error) {
+      console.error("Failed to read questions:", error);
+      alert("Failed to read questions. See console for details.");
+    }
+  }
+
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden mt-8">
+      {/* Debug Button */}
+      <div className="p-4 bg-gray-50 border-b">
+        <Button
+          onClick={readInterviewQuestions}
+          variant="outline"
+          className="text-sm"
+        >
+          Debug: Read Interview Questions
+        </Button>
+      </div>
+
       {/* Company Selector */}
       <div className="flex gap-6 px-8 pt-8 pb-4 overflow-x-auto border-b bg-gray-50 items-center">
         {companies.map((company) => (

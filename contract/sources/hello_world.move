@@ -11,14 +11,7 @@ use std::vector;
 use sui::object::{Self, UID};
 use sui::transfer;
 use sui::tx_context::{Self, TxContext};
-use sui::clock::{Self, Clock};
-
-/// An object that contains an arbitrary string
-public struct HelloWorldObject has key, store {
-    id: UID,
-    /// A string contained in the object
-    text: string::String,
-}
+use sui::clock;
 
 /// Structure to store interview data
 public struct InterviewData has store, copy, drop {
@@ -34,13 +27,13 @@ public struct InterviewHistory has key {
     interviews: vector<InterviewData>,
 }
 
-#[lint_allow(self_transfer)]
-public fun mint(ctx: &mut TxContext) {
-    let object = HelloWorldObject {
+/// Function to initialize the module
+fun init(ctx: &mut TxContext) {
+    let interview_history = InterviewHistory {
         id: object::new(ctx),
-        text: string::utf8(b"Hello World!"),
+        interviews: vector::empty(),
     };
-    transfer::public_transfer(object, tx_context::sender(ctx));
+    transfer::share_object(interview_history);
 }
 
 /// Function to store interview data
@@ -49,23 +42,14 @@ public fun store_interview(
     company_name: string::String,
     interview_question: string::String,
     ctx: &mut TxContext,
-    clock: &Clock,
 ) {
     let interview_data = InterviewData {
         user_address: tx_context::sender(ctx),
         company_name,
         interview_question,
-        timestamp: clock::timestamp_ms(clock),
+        timestamp: 0,
     };
     vector::push_back(&mut interview_history.interviews, interview_data);
-}
-
-/// Function to create a new interview history object
-public fun create_interview_history(ctx: &mut TxContext): InterviewHistory {
-    InterviewHistory {
-        id: object::new(ctx),
-        interviews: vector::empty(),
-    }
 }
 
 /// Function to get the number of interviews

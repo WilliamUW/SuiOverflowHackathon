@@ -22,13 +22,6 @@ interface QAPair {
   isRegenerating?: boolean;
 }
 
-// Mock company descriptions
-const companyDescriptions: Record<string, string> = {
-  google: "Google is a technology company that specializes in Internet-related services and products.",
-  microsoft: "Microsoft Corporation is an American multinational technology company.",
-  sui: "Sui is a Layer 1 blockchain designed for instant settlement and high throughput.",
-};
-
 export default function Preparation() {
   const wallet = useWallet();
   const client = useSuiClient();

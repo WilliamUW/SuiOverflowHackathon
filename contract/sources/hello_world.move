@@ -14,7 +14,8 @@ use sui::tx_context::{Self, TxContext};
 use sui::clock;
 use sui::coin::{Self, Coin, TreasuryCap, CoinMetadata};
 use sui::balance::{Self, Balance};
-use sui::one_time_witness::{Self, OneTimeWitness};
+use std::option;
+use sui::table::{Self, Table};
 
 /// Structure to store interview data
 public struct InterviewData has store, copy, drop {
@@ -30,8 +31,14 @@ public struct InterviewHistory has key {
     interviews: vector<InterviewData>,
 }
 
-/// BBT token type
-public struct BBT has drop {}
+/// Structure to track user reward balances
+public struct RewardBalance has key {
+    id: UID,
+    balances: Table<address, u64>,
+}
+
+/// BehavioralBuddyToken token type
+public struct BehavioralBuddyToken has drop {}
 
 /// Function to initialize the interview history
 public fun init_interview_history(ctx: &mut TxContext) {
@@ -42,46 +49,54 @@ public fun init_interview_history(ctx: &mut TxContext) {
     transfer::share_object(interview_history);
 }
 
-/// Function to initialize the BBT token
-public fun init_bbt_token(witness: BBT, ctx: &mut TxContext) {
-    // Verify that this is a one-time witness
-    one_time_witness::assert_one_time_witness(&witness);
+/// Function to initialize the reward balance table
+public fun init_reward_balance(ctx: &mut TxContext) {
+    let reward_balance = RewardBalance {
+        id: object::new(ctx),
+        balances: table::new(ctx),
+    };
+    transfer::share_object(reward_balance);
+}
 
+/// Function to initialize the BehavioralBuddyToken token
+public fun init_bbt_token(ctx: &mut TxContext) {
     let (treasury_cap, metadata) = coin::create_currency(
-        witness,
+        BehavioralBuddyToken {},
         9, // decimals
-        b"BBT", // symbol
+        b"BUDDY", // symbol
         b"Behavioral Buddy Token", // name
         b"Token rewarded for sharing interview questions", // description
         option::none(), // url
         ctx
     );
-    
-    // Transfer treasury cap to module publisher
     transfer::public_transfer(treasury_cap, tx_context::sender(ctx));
-    // Make metadata immutable and share it
     transfer::public_transfer(metadata, tx_context::sender(ctx));
 }
 
-/// Function to store interview data and mint BBT reward
+/// Function to store interview data and increment reward balance
 public fun store_interview(
     interview_history: &mut InterviewHistory,
+    reward_balance: &mut RewardBalance,
     company_name: string::String,
     interview_question: string::String,
-    treasury_cap: &mut TreasuryCap<BBT>,
     ctx: &mut TxContext,
 ) {
+    let sender = tx_context::sender(ctx);
     let interview_data = InterviewData {
-        user_address: tx_context::sender(ctx),
+        user_address: sender,
         company_name,
         interview_question,
         timestamp: 0,
     };
     vector::push_back(&mut interview_history.interviews, interview_data);
 
-    // Mint 1 BBT token as reward
-    let reward = coin::mint(treasury_cap, 1000000000, ctx); // 1 BBT (with 9 decimals)
-    transfer::public_transfer(reward, tx_context::sender(ctx));
+    // Update reward balance
+    if (table::contains(&reward_balance.balances, sender)) {
+        let current = table::borrow_mut(&mut reward_balance.balances, sender);
+        *current = *current + 1;
+    } else {
+        table::add(&mut reward_balance.balances, sender, 1);
+    }
 }
 
 /// Function to get the number of interviews
@@ -93,4 +108,13 @@ public fun get_interview_count(interview_history: &InterviewHistory): u64 {
 public fun get_interview(interview_history: &InterviewHistory, index: u64): InterviewData {
     assert!(index < vector::length(&interview_history.interviews), 0);
     *vector::borrow(&interview_history.interviews, index)
+}
+
+/// Function to get a user's reward balance
+public fun get_reward_balance(reward_balance: &RewardBalance, user: address): u64 {
+    if (table::contains(&reward_balance.balances, user)) {
+        *table::borrow(&reward_balance.balances, user)
+    } else {
+        0
+    }
 }

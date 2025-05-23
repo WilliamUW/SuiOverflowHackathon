@@ -5,7 +5,7 @@
 
 - [Demo Video](https://youtu.be/H1Betn5Q5ys)
 - [Pitch Deck](https://www.canva.com/design/DAGoHVfmlUc/OsMRobG8RHWiBItMg6s9og/view?utm_content=DAGoHVfmlUc&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7128bbd9c0)
-
+- [SuiScan Testnet Contract Link](https://suiscan.xyz/testnet/object/0x6b8885b607f86f94943d74997beade4650d455b12258ae44c865c2a2e7a5a4f8/tx-blocks)
 
 ## 🎯 Track: Explorations - Global Coordination
 
